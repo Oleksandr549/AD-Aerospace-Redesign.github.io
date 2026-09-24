@@ -67,6 +67,23 @@
   .wordmark .swoosh{height:38px;width:auto;display:block}
   .wordmark small{display:block; font-family:'Courier New',monospace; font-weight:600; font-size:.55rem; letter-spacing:.22em; color:var(--muted)}
 
+  /* soft hover transitions — one shared rule for every nav link / icon button / menu
+     item that only ever changed color or background instantly before. Deliberately
+     excludes .card/.path-card/.cta (base), which already carry their own tuned
+     transitions for transform/box-shadow/background-image. */
+  .pinned-nav a, .mega-tab, .mega-list a, .mega-ac-card b, .dd-menu a, .lang-dd > button,
+  .burger, .cta.ghost, .menu-close, .overlay-nav > a, .overlay-group > a, .overlay-sub a,
+  .hero-scroll-cue, footer a, .foot-bottom a, .orbit-toolbar button, .carousel-nav button,
+  .floating-tab, .hotspot-modal-close{
+    transition:color .25s ease, background-color .25s ease, border-color .25s ease, opacity .25s ease;
+  }
+  @media (prefers-reduced-motion:reduce){
+    .pinned-nav a, .mega-tab, .mega-list a, .mega-ac-card b, .dd-menu a, .lang-dd > button,
+    .burger, .cta.ghost, .menu-close, .overlay-nav > a, .overlay-group > a, .overlay-sub a,
+    .hero-scroll-cue, footer a, .foot-bottom a, .orbit-toolbar button, .carousel-nav button,
+    .floating-tab, .hotspot-modal-close{ transition:none; }
+  }
+
   /* compact pinned row — matches the live site's collapsed nav pattern */
   .pinned-nav{display:flex; align-items:center; gap:2px}
   .pinned-nav a{font-size:.86rem; font-weight:600; padding:10px 14px; border-radius:var(--radius); color:var(--ink)}
@@ -123,6 +140,17 @@
     border-radius:var(--radius); padding:9px 16px; font-size:.86rem; font-weight:700; color:var(--ink);
   }
   .burger:hover{border-color:var(--accent); color:var(--accent)}
+  /* hamburger → X morph, driven purely by the aria-expanded state the menu JS already sets */
+  .burger-icon{position:relative; width:16px; height:11px; display:inline-block; flex:none}
+  .burger-icon i{position:absolute; left:0; width:100%; height:2px; border-radius:2px; background:currentColor;
+    transition:transform .35s cubic-bezier(.16,1,.3,1), opacity .2s ease, top .35s cubic-bezier(.16,1,.3,1)}
+  .burger-icon i:nth-child(1){top:0}
+  .burger-icon i:nth-child(2){top:4.5px}
+  .burger-icon i:nth-child(3){top:9px}
+  .burger[aria-expanded="true"] .burger-icon i:nth-child(1){top:4.5px; transform:rotate(45deg)}
+  .burger[aria-expanded="true"] .burger-icon i:nth-child(2){opacity:0}
+  .burger[aria-expanded="true"] .burger-icon i:nth-child(3){top:4.5px; transform:rotate(-45deg)}
+  @media (prefers-reduced-motion:reduce){.burger-icon i{transition:none}}
 
   .cta{
     background-image:linear-gradient(to left, #0071b3 0%, #006099 30%, #006099 100%); color:#fff; padding:11px 20px; border-radius:var(--radius); font-size:.82rem;
@@ -132,10 +160,31 @@
   .cta.ghost{background:none; border:1.5px solid var(--line); color:var(--blue-600)}
   .cta.ghost:hover{border-color:var(--accent); color:var(--accent)}
 
-  /* full-menu overlay, opened from the "Menu" trigger */
-  .menu-overlay{position:fixed; inset:0; z-index:60; background:rgba(1,14,26,.55); display:flex; justify-content:flex-end}
+  /* the three header controls (language switcher, Contact, menu button) sat at three
+     different heights — 35px / 37px / 31px — because each is sized purely by its own
+     padding + content (a short label, a longer label, and a fixed-size icon). Pin all
+     three to one height so the row lines up regardless of what's inside each button. */
+  .lang-dd > button, .cta.hdr-contact, .burger{
+    height:38px; display:inline-flex; align-items:center; justify-content:center;
+  }
+
+  /* full-menu overlay, opened from the "Menu" trigger — backdrop fades in, panel eases
+     in from the edge; .open is toggled by JS a frame after [hidden] is removed so the
+     browser has a closed state to transition from (see menuToggle logic below) */
+  .menu-overlay{
+    position:fixed; inset:0; z-index:60; display:flex; justify-content:flex-end;
+    background:rgba(1,14,26,0); opacity:0; pointer-events:none;
+    transition:opacity .35s cubic-bezier(.16,1,.3,1), background-color .35s cubic-bezier(.16,1,.3,1);
+  }
+  .menu-overlay.open{background:rgba(1,14,26,.55); opacity:1; pointer-events:auto}
   .menu-overlay[hidden]{display:none}
-  .menu-panel{width:min(400px,88vw); height:100%; background:var(--surface); display:flex; flex-direction:column; box-shadow:-16px 0 40px -20px rgba(1,20,34,.5)}
+  .menu-panel{
+    width:min(400px,88vw); height:100%; background:var(--surface); display:flex; flex-direction:column;
+    box-shadow:-16px 0 40px -20px rgba(1,20,34,.5); transform:translateX(28px); opacity:0;
+    transition:transform .4s cubic-bezier(.16,1,.3,1), opacity .3s ease;
+  }
+  .menu-overlay.open .menu-panel{transform:translateX(0); opacity:1}
+  @media (prefers-reduced-motion:reduce){.menu-overlay,.menu-panel{transition:none}}
   .menu-panel-head{display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--line)}
   .menu-panel-title{font-family:'Courier New',monospace; font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
   .menu-close{background:none; border:1px solid var(--line); border-radius:var(--radius); width:34px; height:34px; font-size:.9rem; color:var(--ink)}
@@ -358,10 +407,12 @@
   .hero-actions .cta.ghost{color:#fff; border-color:rgba(255,255,255,.4)}
   .hero-actions .cta.ghost:hover{border-color:#fff; color:#8FC6EA}
   .hero-actions .cta:focus-visible, .hero-scroll-cue:focus-visible{outline:2px solid #8FC6EA; outline-offset:3px}
-  .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s cubic-bezier(.2,.7,.2,1), transform .6s cubic-bezier(.2,.7,.2,1)}
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); will-change:opacity,transform}
   .reveal.in{opacity:1; transform:none}
   .reveal-stagger.in > *{animation:none}
-  @media (prefers-reduced-motion:reduce){.reveal{opacity:1; transform:none; transition:none}}
+  .reveal-block{opacity:0; transform:translateY(32px); transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1); will-change:opacity,transform}
+  .reveal-block.in{opacity:1; transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal,.reveal-block{opacity:1; transform:none; transition:none}}
   @media (prefers-reduced-motion:reduce){.cam-slide{transition:none} .cam-showcase-track{transition:none}}
 
   @keyframes pulseRing{0%{opacity:.9; transform:translate(-50%,-50%) scale(.4)} 70%{opacity:.22; transform:translate(-50%,-50%) scale(1.6)} 100%{opacity:.22; transform:translate(-50%,-50%) scale(1.6)}}
@@ -583,7 +634,7 @@
       </div>
       <a href="#contact" data-key="contact" class="cta hdr-contact">Contact</a>
       <button class="burger" id="menuToggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="menuOverlay" aria-label="Menu">
-        <span aria-hidden="true">☰</span>
+        <span class="burger-icon" aria-hidden="true"><i></i><i></i><i></i></span>
       </button>
     </div>
   </div>
@@ -1587,13 +1638,26 @@ contact(){
   if(!overlay || !openBtn || !closeBtn) return;
   function openMenu(){
     overlay.hidden = false;
+    // force a reflow so the browser paints the closed (opacity:0 / translateX) state
+    // before .open is added — otherwise the two happen in the same frame and the
+    // transition is skipped, and the panel just appears instantly.
+    void overlay.offsetHeight;
+    requestAnimationFrame(()=>{ overlay.classList.add('open'); });
     openBtn.setAttribute('aria-expanded','true');
     document.body.style.overflow = 'hidden';
   }
   function closeMenu(){
-    overlay.hidden = true;
+    overlay.classList.remove('open');
     openBtn.setAttribute('aria-expanded','false');
     document.body.style.overflow = '';
+    var panel = overlay.querySelector('.menu-panel');
+    var finish = function(){ overlay.hidden = true; };
+    if(panel && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      panel.addEventListener('transitionend', finish, {once:true});
+      setTimeout(finish, 450); // safety net if transitionend doesn't fire
+    } else {
+      finish();
+    }
   }
   openBtn.addEventListener('click', openMenu);
   closeBtn.addEventListener('click', closeMenu);
@@ -1673,9 +1737,16 @@ function afterRender(){
     });
   });
 
-  // fade/slide reveal on scroll
+  // fade/slide reveal on scroll — fine-grained (cards, stat rows, etc.)
   const revealSelectors = '.card,.path-card,.stat-row,.section-head,.spec-box,.video-card,.feature-pill,.usecase-pill,.anim-panel,.compare,.orbit-viewer';
   app.querySelectorAll(revealSelectors).forEach(el=>el.classList.add('reveal'));
+
+  // fade/slide reveal on scroll — whole content blocks (every page-level section
+  // gets this, so motion isn't limited to a handful of component types). .page-hero
+  // is deliberately excluded here — its children get their own staggered reveal
+  // just below, and double-wrapping it would fade it in twice (parent + children).
+  const revealBlockSelectors = '.section,.contact-block,.req-banner,.oem-logos';
+  app.querySelectorAll(revealBlockSelectors).forEach(el=>el.classList.add('reveal-block'));
 
   // hero: stagger eyebrow / h1 / actions in one at a time
   app.querySelectorAll('.hero-copy').forEach(wrap=>{
@@ -1684,11 +1755,18 @@ function afterRender(){
       child.style.transitionDelay = (i*130)+'ms';
     });
   });
+  // inner-page hero banner: stagger breadcrumb / eyebrow / h1 / lede the same way
+  app.querySelectorAll('.page-hero').forEach(wrap=>{
+    Array.from(wrap.children).forEach((child,i)=>{
+      child.classList.add('reveal');
+      child.style.transitionDelay = (i*100)+'ms';
+    });
+  });
   app.querySelectorAll('.grid').forEach(grid=>{
     Array.from(grid.children).forEach((child,i)=>{ child.style.transitionDelay = Math.min(i*60,300)+'ms'; });
   });
   if(window.__io) window.__io.disconnect();
-  const revealEls = app.querySelectorAll('.reveal');
+  const revealEls = app.querySelectorAll('.reveal, .reveal-block');
   if('IntersectionObserver' in window){
     window.__io = new IntersectionObserver(entries=>{
       entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); window.__io.unobserve(e.target); } });
