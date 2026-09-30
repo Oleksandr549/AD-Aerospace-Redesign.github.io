@@ -158,7 +158,7 @@
   .mega-list a:hover{background:var(--blue-100); color:var(--navy-900)}
   .mega-tab{cursor:pointer; border:none; background:none; font-family:inherit}
   .oem-logos{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:44px; margin-top:22px}
-  .oem-logos img{height:34px; width:auto; max-width:130px; object-fit:contain; opacity:.85; filter:grayscale(15%)}
+  .oem-logos img{height:52px; width:auto; max-width:190px; object-fit:contain; opacity:.85; filter:grayscale(15%)}
   .mega-aircraft{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding:24px}
   .mega-aircraft[hidden]{display:none}
   .dd-menu .mega-ac-card{display:flex; flex-direction:column; border-radius:6px; overflow:hidden; background:var(--paper); border:1px solid var(--line)}
@@ -286,8 +286,8 @@
      rounded-square halo around the dot instead of a thin ring — that's the "квадрат" bug. */
   .wire-plane .spot{position:absolute; transform:translate(-50%,-50%); width:20px; height:20px; display:block; cursor:pointer; z-index:3; border-radius:50%}
   .wire-plane a.spot{-webkit-tap-highlight-color:transparent; outline:none}
-  .wire-plane .dot{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:7px; height:7px; border-radius:50%; background:#fff; box-shadow:0 0 6px 1px rgba(62,123,255,.9)}
-  .wire-plane .dot-ring{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:20px; height:20px; border-radius:50%; border:1.2px solid #3E7BFF; opacity:.65; box-shadow:0 0 3px rgba(62,123,255,.6); animation:pulseRing 2.4s ease-out infinite}
+  .wire-plane .dot{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:9px; height:9px; border-radius:50%; background:#fff; box-shadow:0 0 12px 3px rgba(79,195,247,1)}
+  .wire-plane .dot-ring{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22px; height:22px; border-radius:50%; border:1.6px solid #4FC3F7; opacity:.9; box-shadow:0 0 8px rgba(79,195,247,.85); animation:pulseRing 2.4s ease-out infinite}
   .wire-plane .hotspot-label{position:absolute; bottom:135%; left:50%; transform:translateX(-50%); white-space:nowrap; background:rgba(1,20,34,.88); color:#fff; font:600 .68rem/1 'Courier New',monospace; letter-spacing:.04em; padding:5px 9px; border-radius:4px; opacity:0; pointer-events:none; transition:opacity .15s ease}
   .wire-plane a.spot:hover .hotspot-label, .wire-plane a.spot:focus-visible .hotspot-label{opacity:1}
   .wire-plane a.spot:hover .dot-ring, .wire-plane a.spot:focus-visible .dot-ring{opacity:1; border-color:#8FC6EA}
@@ -387,7 +387,7 @@
   .k4-hero .wrap{text-align:center; display:flex; flex-direction:column; align-items:center; padding-block:40px 30px}
   .k4-hero .breadcrumbs{align-self:flex-start}
   .k4-hero-badge{width:64px; height:auto; margin-bottom:18px}
-  .k4-hero h1{max-width:20ch}
+  .k4-hero h1{max-width:34ch}
   .k4-hero p.lede{margin-top:14px; max-width:46ch}
   /* .tag.mono pill moved out of the hero and into the AI Processor section below */
 

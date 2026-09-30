@@ -7,14 +7,18 @@
   // originally built at runtime from SYSTEMS/AIRCRAFT data + the wirePlane() template
   // helper. In this static export that markup is already baked into the page (it was
   // captured post-render), so only the mega-tab switch behavior needs to be wired up here.
+  function switchMegaTab(btn){
+    var wrap = btn.closest('.dd-menu');
+    wrap.querySelectorAll('[data-mega-tab]').forEach(function(b){ b.classList.remove('current'); });
+    btn.classList.add('current');
+    var target = btn.dataset.megaTab;
+    wrap.querySelectorAll('[data-mega-panel]').forEach(function(p){ p.hidden = (p.dataset.megaPanel !== target); });
+  }
   document.querySelectorAll('[data-mega-tab]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var wrap = btn.closest('.dd-menu');
-      wrap.querySelectorAll('[data-mega-tab]').forEach(function(b){ b.classList.remove('current'); });
-      btn.classList.add('current');
-      var target = btn.dataset.megaTab;
-      wrap.querySelectorAll('[data-mega-panel]').forEach(function(p){ p.hidden = (p.dataset.megaPanel !== target); });
-    });
+    btn.addEventListener('click', function(){ switchMegaTab(btn); });
+    // Hovering a tab (desktop/mouse only) previews its panel immediately, same as a click —
+    // e.g. hovering "By Aircraft" swaps the diagram straight to the aircraft photo cards.
+    btn.addEventListener('mouseenter', function(){ switchMegaTab(btn); });
   });
 })();
 
