@@ -213,6 +213,26 @@ function closeImageLightbox(){
   });
 })();
 
+(function(){
+  // Hovering a hotspot on the "By Application" mega-menu diagram also highlights the
+  // matching row in the systems list beside it. data-mega-index ties each spot to the
+  // position of its <li> in that panel's .mega-list (0-based).
+  document.querySelectorAll('.mega-body[data-mega-panel="application"]').forEach(function(panel){
+    var list = panel.querySelector('.mega-list');
+    if(!list) return;
+    var items = list.querySelectorAll('li');
+    panel.querySelectorAll('.wire-plane .spot[data-mega-index]').forEach(function(spot){
+      var li = items[+spot.dataset.megaIndex];
+      var link = li && li.querySelector('a');
+      if(!link) return;
+      spot.addEventListener('mouseenter', function(){ link.classList.add('hotspot-active'); });
+      spot.addEventListener('mouseleave', function(){ link.classList.remove('hotspot-active'); });
+      spot.addEventListener('focus', function(){ link.classList.add('hotspot-active'); });
+      spot.addEventListener('blur', function(){ link.classList.remove('hotspot-active'); });
+    });
+  });
+})();
+
 function afterRender(){
   const app = document.getElementById('app');
   if(!app) return;

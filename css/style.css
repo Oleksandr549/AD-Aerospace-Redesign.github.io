@@ -286,12 +286,14 @@
      rounded-square halo around the dot instead of a thin ring — that's the "квадрат" bug. */
   .wire-plane .spot{position:absolute; transform:translate(-50%,-50%); width:20px; height:20px; display:block; cursor:pointer; z-index:3; border-radius:50%}
   .wire-plane a.spot{-webkit-tap-highlight-color:transparent; outline:none}
-  .wire-plane .dot{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:9px; height:9px; border-radius:50%; background:#fff; box-shadow:0 0 12px 3px rgba(79,195,247,1)}
-  .wire-plane .dot-ring{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22px; height:22px; border-radius:50%; border:1.6px solid #4FC3F7; opacity:.9; box-shadow:0 0 8px rgba(79,195,247,.85); animation:pulseRing 2.4s ease-out infinite}
+  .wire-plane .dot{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:9px; height:9px; border-radius:50%; background:#fff; box-shadow:0 0 12px 3px rgba(79,195,247,1); transition:transform .18s ease, box-shadow .18s ease}
+  .wire-plane .dot-ring{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22px; height:22px; border-radius:50%; border:1.6px solid #4FC3F7; opacity:.9; box-shadow:0 0 8px rgba(79,195,247,.85); animation:pulseRing 2.4s ease-out infinite; transition:transform .18s ease, opacity .18s ease, box-shadow .18s ease, border-color .18s ease}
   .wire-plane .hotspot-label{position:absolute; bottom:135%; left:50%; transform:translateX(-50%); white-space:nowrap; background:rgba(1,20,34,.88); color:#fff; font:600 .68rem/1 'Courier New',monospace; letter-spacing:.04em; padding:5px 9px; border-radius:4px; opacity:0; pointer-events:none; transition:opacity .15s ease}
   .wire-plane a.spot:hover .hotspot-label, .wire-plane a.spot:focus-visible .hotspot-label{opacity:1}
-  .wire-plane a.spot:hover .dot-ring, .wire-plane a.spot:focus-visible .dot-ring{opacity:1; border-color:#8FC6EA}
+  .wire-plane a.spot:hover .dot-ring, .wire-plane a.spot:focus-visible .dot-ring{opacity:1; border-color:#8FC6EA; transform:translate(-50%,-50%) scale(1.35); box-shadow:0 0 14px rgba(143,198,234,.95)}
+  .wire-plane a.spot:hover .dot, .wire-plane a.spot:focus-visible .dot{transform:translate(-50%,-50%) scale(1.55); box-shadow:0 0 18px 5px rgba(143,198,234,1)}
   .wire-plane a.spot:focus-visible{box-shadow:0 0 0 2px #8FC6EA}
+  .mega-list a.hotspot-active{background:var(--blue-100); color:var(--navy-900)}
 
   /* hero */
   .hero{
