@@ -387,6 +387,24 @@ function afterRender(){
     btn.addEventListener('click', openVideoModal);
   });
 
+  // click-to-play product videos: poster + centered play badge (e.g. eVTOL 4K animation).
+  // Native controls stay off until the badge is clicked, so the frame reads as a still
+  // photo (matching every other .photo-frame on the site) until the visitor presses play.
+  app.querySelectorAll('[data-play-video]').forEach(btn=>{
+    const frame = btn.closest('.video-frame');
+    const vid = frame && frame.querySelector('video');
+    if(!vid) return;
+    btn.addEventListener('click', ()=>{
+      vid.controls = true;
+      frame.classList.add('is-playing');
+      vid.play().catch(()=>{});
+    });
+    vid.addEventListener('ended', ()=>{
+      frame.classList.remove('is-playing');
+      vid.controls = false;
+    });
+  });
+
   // cam video embed: the 4K camera animation, plays inline when motion is allowed (element-scoped, re-runs every render)
   app.querySelectorAll('.cam-video-embed .anim-video').forEach(vid=>{
     if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){

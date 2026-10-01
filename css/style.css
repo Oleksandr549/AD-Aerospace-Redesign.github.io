@@ -492,6 +492,46 @@
   details.spec-box > .spec-list{margin-top:16px}
   @media (prefers-reduced-motion:reduce){.spec-toggle::before{transition:none}}
 
+  /* Related products — square photo cards with notched corners (same octagon-cut treatment
+     used site-wide for photo tiles, e.g. the Features/carousel cards) and a bottom text
+     overlay. No border, no card lift on hover (that translateY/shadow-lift pattern reads
+     as generic and is used everywhere) — instead the photo itself does a slow, contained
+     zoom inside the fixed clipped frame, same idea as a product-photography hover, via a
+     separate .related-card-photo layer so the zoom never shifts the text/arrow above it.
+     The arrow badge reuses the exact pattern already established on the usecase/gallery
+     photos (white circular badge, fading + scaling in top-right), just with our arrow glyph.
+     Items with no product page yet render as a non-interactive card via .no-link. */
+  .related-cards{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .related-card{
+    position:relative; display:flex; align-items:flex-end; aspect-ratio:1/1; overflow:hidden;
+    background-color:var(--paper); text-decoration:none;
+    clip-path:polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+  }
+  .related-card-photo{
+    position:absolute; inset:0; z-index:0; background-size:cover; background-position:center;
+    transition:transform .5s cubic-bezier(.2,.7,.2,1);
+  }
+  .related-card:hover .related-card-photo{transform:scale(1.08)}
+  .related-card::before{
+    content:""; position:absolute; inset:0; z-index:1;
+    background:linear-gradient(180deg, rgba(0,20,34,0) 40%, rgba(0,20,34,.85) 100%);
+  }
+  .related-card-overlay{position:relative; z-index:2; display:flex; flex-direction:column; gap:2px; padding:10px 12px}
+  .related-card-code{font-family:'Courier New',monospace; font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.78)}
+  .related-card-name{font-size:.82rem; font-weight:700; line-height:1.28; color:#fff}
+  .related-card .cta-arrow{
+    position:absolute; z-index:2; top:12px; right:12px; width:30px; height:30px;
+    border-radius:50%; background:rgba(255,255,255,.94); color:var(--navy-900);
+    align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,.2);
+    opacity:0; transform:scale(.85); transition:opacity .2s ease, transform .2s ease;
+  }
+  .related-card .cta-arrow svg{width:14px; height:14px}
+  a.related-card:hover .cta-arrow{opacity:1; transform:scale(1)}
+  .related-card.no-link{cursor:default}
+  .related-card.no-link::before{background:linear-gradient(180deg, rgba(40,46,52,0) 40%, rgba(40,46,52,.82) 100%)}
+  .related-card.no-link .related-card-name, .related-card.no-link .related-card-code{opacity:.85}
+  @media (max-width:420px){.related-cards{grid-template-columns:1fr}}
+
   /* icon variant of spec-list, used for the eVTOL "Use cases" list (scoped via .uc-list so the
      default key/value .spec-list styling elsewhere on the page is untouched) */
   .spec-list.uc-list{gap:16px}
@@ -943,6 +983,38 @@
   .video-modal-close{background:none; border:1px solid rgba(255,255,255,.25); color:#fff; width:30px; height:30px; border-radius:50%}
   .video-modal-body{aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; color:#B9C8D6; background:radial-gradient(circle at 50% 40%, rgba(62,154,214,.16), transparent 60%)}
   .video-modal-body svg{width:52px; height:52px; color:#8FC6EA}
+
+  /* click-to-play product video frame (e.g. eVTOL 4K animation) — sits inside .photo-frame
+     so it shares the site-wide notched-corner treatment; a soft vignette plus a centered
+     play badge (same white-circle/navy-icon language as .related-card .cta-arrow, scaled
+     up) sit over the poster until pressed, then fade out and hand off to native controls. */
+  .video-frame{position:relative}
+  .video-frame video{width:100%; aspect-ratio:16/9; object-fit:cover; display:block}
+  /* browsers draw their own large center play icon on a <video controls> whenever it's
+     paused (Chrome/Edge: the overlay-play-button pseudo-element) — that's the "play
+     button reappears on pause" report, separate from our .video-play-btn badge above,
+     which only ever shows once (pre-play). Suppress every engine's native one so ours
+     is the only play affordance, in and out of fullscreen. */
+  .video-frame video::-webkit-media-controls-overlay-play-button,
+  .video-frame video::-webkit-media-controls-start-playback-button{display:none !important; -webkit-appearance:none}
+  .video-frame::before{
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(circle at 50% 50%, rgba(0,20,34,.08) 0%, rgba(0,20,34,.48) 100%);
+    transition:opacity .3s ease;
+  }
+  .video-frame.is-playing::before{opacity:0}
+  .video-play-btn{
+    position:absolute; z-index:2; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:72px; height:72px; border-radius:50%; border:none; cursor:pointer; padding:0;
+    background:rgba(255,255,255,.94); color:var(--navy-900);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 30px rgba(0,10,20,.4);
+    transition:transform .25s cubic-bezier(.2,.7,.2,1), background .2s ease, opacity .25s ease;
+  }
+  .video-play-btn:hover{transform:translate(-50%,-50%) scale(1.08); background:#fff}
+  .video-play-btn svg{width:26px; height:26px; margin-left:3px; display:block}
+  .video-frame.is-playing .video-play-btn{opacity:0; pointer-events:none}
+  @media (max-width:640px){.video-play-btn{width:54px; height:54px} .video-play-btn svg{width:19px; height:19px; margin-left:2px}}
 
   /* image lightbox — full-size view for any carousel/gallery photo (click-to-view) */
   /* solid background (not translucent like the video modal) — a translucent backdrop let
