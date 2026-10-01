@@ -718,7 +718,7 @@
   }
   .compare-frame{position:relative}
   .compare-frame img{width:100%; display:block; object-fit:cover; max-height:420px}
-  .compare-frame .hd-layer{position:absolute; inset:0; filter:grayscale(.55) blur(.5px) brightness(.82) contrast(.92); transition:opacity .45s ease}
+  .compare-frame .hd-layer{position:absolute; inset:0; filter:grayscale(.4) blur(1.8px) brightness(.78) contrast(.8) saturate(.75); transition:opacity .45s ease}
   .compare-toggle{position:absolute; opacity:0; pointer-events:none}
   .compare-toggle:checked ~ .hd-layer{opacity:0}
   .compare-tag{position:absolute; bottom:14px; left:14px; z-index:3; display:inline-flex; background:rgba(1,20,34,.68); border-radius:9999px; padding:3px; gap:2px}
