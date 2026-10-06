@@ -636,13 +636,12 @@
   }
   .field input:focus,.field textarea:focus{outline:none; border-color:var(--focus); box-shadow:0 0 0 3px rgba(0,113,179,.18)}
   .contact-block{display:flex; flex-direction:column; gap:4px}
-  .contact-block .k{font-family:'Courier New',monospace; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
+  .contact-block .k{font-family:'Courier New',monospace; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
   .contact-block .v{font-weight:600}
 
   /* footer */
   footer{background:var(--navy-950); color:#C9D6E1; margin-top:0; position:relative; overflow:hidden}
   .footer-accent{position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(to right,#0071b3 0%,#006099 30%,#006099 100%); z-index:2}
-  .footer-wm{position:absolute; right:-40px; bottom:-30px; width:420px; max-width:55%; opacity:.07; pointer-events:none; z-index:0}
   footer .wrap{padding-block:56px 28px}
   .foot-grid{display:grid; grid-template-columns:1.3fr repeat(3,1fr); gap:36px}
   @media (max-width:800px){.foot-grid{grid-template-columns:1fr 1fr}}
@@ -759,7 +758,7 @@
   @media (prefers-reduced-motion:reduce){.anim-panel::after{animation:none}}
   .anim-badge{
     position:absolute; top:16px; left:16px; z-index:2; display:inline-flex; align-items:center; gap:8px;
-    background:rgba(1,20,34,.7); backdrop-filter:blur(4px); border:1px solid rgba(143,198,234,.4);
+    background:rgba(1,20,34,.7); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); border:1px solid rgba(143,198,234,.4);
     color:#DCEAF4; font-family:'Courier New',monospace; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase;
     padding:7px 12px; border-radius:9999px;
   }
@@ -1283,13 +1282,6 @@ a.card:focus-visible::after, a.related-card:focus-visible::after, .mega-ac-card:
 .gallery-progress-bar{transition:width var(--t-2) var(--ease-out), left var(--t-2) var(--ease-out)}
 .compare-handle span{transition:transform var(--t-2) var(--ease-out)}
 
-/* ---- section eyebrows: a short rule draws in before the label as the heading reveals ---- */
-.section-head .eyebrow::before{
-  content:""; display:inline-block; width:0; height:1px; background:var(--accent); vertical-align:middle;
-  margin-right:0; transition:width var(--t-3) var(--ease-out) .2s, margin-right var(--t-3) var(--ease-out) .2s;
-}
-.section-head.in .eyebrow::before{width:22px; margin-right:10px}
-
 /* ---- reduced motion: everything static, state changes still visible ---- */
 @media (prefers-reduced-motion:reduce){
   .media img, .usecase-photo img, .gallery-photo img, .install-photo img, .related-card-photo, .mega-ac-card img{transform:none; transition:none}
@@ -1297,7 +1289,6 @@ a.card:focus-visible::after, a.related-card:focus-visible::after, .mega-ac-card:
   .cta::before, .button-4k::before, :is(.card, a.card, .fcard, .ai-icons li, a.related-card, .mega-ac-card)::after, .path-card::before,
   .mega-list a::before, .dd-menu a::before, .overlay-nav > a::before, .overlay-sub a::before{transition:none}
   .menu-overlay .overlay-nav > *{opacity:1; transform:none; transition:none}
-  .section-head .eyebrow::before{width:22px; margin-right:10px; transition:none}
   .mega-list a:hover, .dd-menu a:hover, .overlay-nav > a:hover, .overlay-sub a:hover{transform:none}
   .fcard:hover .card-icon, .ai-icons li:hover img, .cta:active, .button-4k:active{transform:none}
 }
@@ -1362,3 +1353,46 @@ header.site.header-glass .pinned-nav .dd-menu a:hover, header.site.header-glass 
   .spec-toggle:hover{color:var(--navy-900)}
   .spec-toggle:hover span{text-decoration-color:currentColor}
 }
+
+/* very narrow phones (320px): let grid tracks shrink below their content so long words wrap instead of widening the page */
+@media (max-width:560px){.ai-icons{grid-template-columns:repeat(2,minmax(0,1fr))} .ai-icons li{min-width:0} .ai-icons p{overflow-wrap:anywhere; hyphens:auto}}
+
+/* ===== TOUCH-TARGET + LEGIBILITY PASS (from the mobile/desktop audit) ===== */
+/* ticker link was 15px tall inside a 52px bar: make the whole row the hit area */
+.ticker-link{display:inline-flex; align-items:center; min-height:44px}
+/* standalone text links ("Learn more →") — at least 24px tall on desktop, ~40px on touch, without moving the layout */
+.card .link, .product-card .link, a.link{padding-block:4px; margin-block:-4px}
+@media (pointer:coarse){
+  .card .link, .product-card .link, a.link{padding-block:10px; margin-block:-10px; --ul-b:8px}
+  /* hotspots on the aircraft diagram: 20px dot, ~44px touch area */
+  .wire-plane a.spot::before{content:""; position:absolute; inset:-12px; border-radius:50%}
+}
+.spec-toggle{padding-block:10px}
+/* small mono labels: keep the look, but never below ~11.5px */
+.card .tag, .page-hero-photo .tag, .ai-processor-content .tag.mono{font-size:.72rem}
+.wire-plane .hotspot-label{font-size:.72rem}
+.cmp-label small{font-size:.72rem}
+
+/* mobile polish from the visual review */
+.band .cta{white-space:nowrap}
+@media (max-width:560px){
+  .band .wrap > div:last-child{width:100%; flex-wrap:wrap}
+  .band .wrap > div:last-child .cta{flex:1 1 auto; justify-content:center}
+}
+.foot-bottom a{white-space:nowrap}
+.doc-row{padding-block:6px; margin-block:-6px}
+
+/* 3D viewer on touch devices: poster + explicit "Tap to load" (nothing heavy is fetched or compiled until asked) */
+.v3d-deferred .v3d-toolbar, .v3d-deferred .orbit-hint, .v3d-deferred .v3d-status{display:none}
+.v3d-deferred .v3d-poster{opacity:.95; filter:none}
+.v3d-activate{position:absolute; z-index:4; left:0; right:0; bottom:22px; margin-inline:auto; width:max-content; max-width:calc(100% - 32px); gap:10px}
+.v3d-activate svg{width:18px; height:18px; flex:none}
+.v3d-activate small{font-size:.72rem; font-weight:600; opacity:.8; padding-left:10px; border-left:1px solid rgba(255,255,255,.4)}
+.band input::placeholder{color:rgba(255,255,255,.78); opacity:1}
+.band input:focus-visible{outline:2px solid #fff; outline-offset:2px}
+
+/* ghost button on the blue band: base state, and a hover that is actually visible (blue fill on a blue band was invisible) */
+.band .cta.ghost{color:#fff; border-color:rgba(255,255,255,.6)}
+.band .cta.ghost::before{background:rgba(255,255,255,.18)}
+@media (hover:hover) and (pointer:fine){ .band .cta.ghost:hover{border-color:#fff; color:#fff} }
+.band .cta.ghost:active{border-color:#fff}

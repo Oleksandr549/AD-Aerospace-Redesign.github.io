@@ -432,7 +432,27 @@ function afterRender(){
       const s = document.createElement('script'); s.src = 'js/camera-3d.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s);
     }));
     const start = el => loadLib().then(()=> window.AD3D.init(el)).catch(()=>{ el.classList.remove('v3d-loading'); el.classList.add('v3d-failed'); });
-    if('IntersectionObserver' in window){
+    // Phones / tablets (coarse pointer) and Save-Data users: don't spend ~2.7 MB and a second of main-thread
+    // time unasked. The poster stays, with a "Tap to load" button; everyone else still gets the auto lazy-load.
+    const deferLoad = (window.matchMedia && matchMedia('(pointer:coarse)').matches) || !!(navigator.connection && navigator.connection.saveData);
+    if(deferLoad){
+      viewers3d.forEach(el=>{
+        const status = el.querySelector('[data-v3d-status]');
+        if(status) status.hidden = true;
+        el.classList.add('v3d-deferred');
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'cta v3d-activate';
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3.5 19.5 7.7v8.6L12 20.5 4.5 16.3V7.7L12 3.5z"/><path d="M4.5 7.7 12 12l7.5-4.3M12 12v8.5"/></svg><span>Tap to load 3D viewer</span><small>≈ 2 MB</small>';
+        btn.addEventListener('click', ()=>{
+          el.classList.remove('v3d-deferred');
+          if(status) status.hidden = false;
+          btn.remove();
+          start(el);
+        });
+        el.appendChild(btn);
+      });
+    } else if('IntersectionObserver' in window){
       const io = new IntersectionObserver(es => es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); start(e.target); } }), {rootMargin:'400px'});
       viewers3d.forEach(v => io.observe(v));
     } else viewers3d.forEach(start);

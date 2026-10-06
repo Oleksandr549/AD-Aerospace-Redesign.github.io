@@ -169,14 +169,14 @@
   <section class="band reveal-block">
     <div class="wrap">
       <div><h2>Certified &amp; ready to specify</h2><p>Browse our approval certificates or talk to the team about your platform.</p></div>
-      <div style="display:flex; gap:10px"><a href="certificates.html" class="cta cta-invert">Approval Certificates</a><a href="contact.html" class="cta ghost" style="border-color:rgba(255,255,255,.6); color:#fff">Contact Us</a></div>
+      <div style="display:flex; gap:10px"><a href="certificates.html" class="cta cta-invert">Approval Certificates</a><a href="contact.html" class="cta ghost">Contact Us</a></div>
     </div>
   </section>
 
   <section class="wrap section reveal-block">
     <div class="grid cols-2" style="align-items:center">
       <div class="anim-panel reveal" style="transition-delay: 0ms;">
-        <img class="anim-video" src="assets/img/4k-photo-4-1157.webp" alt="AD Aerospace 4K IP camera — product photo, three-quarter angle" style="max-height:520px" srcset="assets/img/4k-photo-4-480.webp 480w, assets/img/4k-photo-4-800.webp 800w, assets/img/4k-photo-4-1157.webp 1157w" sizes="(max-width: 760px) 100vw, 560px" width="1157" height="1400" loading="lazy" decoding="async">
+        <img class="anim-video" src="assets/img/4k-photo-4-1157.webp" alt="AD Aerospace 4K IP camera — product photo, three-quarter angle" style="max-height:520px; object-position:50% 85%" srcset="assets/img/4k-photo-4-480.webp 480w, assets/img/4k-photo-4-800.webp 800w, assets/img/4k-photo-4-1157.webp 1157w" sizes="(max-width: 760px) 100vw, 560px" width="1157" height="1400" loading="lazy" decoding="async">
       </div>
       <div style="transition-delay: 60ms;">
         <div class="section-head reveal">
@@ -203,7 +203,17 @@
   </section>
 
 
-  <section class="wrap section reveal-block" style="padding-top:0">
+  <section class="band reveal-block">
+    <div class="wrap">
+      <div><h2>Download our e-brochure</h2><p>Enter your email address to receive a copy of our latest e-brochure.</p></div>
+      <form style="display:flex; gap:8px; min-width:0; max-width:100%; flex:0 1 420px" onsubmit="event.preventDefault()">
+        <input type="email" placeholder="Work email" aria-label="Work email" autocomplete="email" required="" style="flex:1; width:0; min-width:0; border:1px solid rgba(255,255,255,.55); border-radius:6px; padding:11px 12px; font:inherit; background:rgba(255,255,255,.12); color:#fff">
+        <button class="cta cta-invert" type="submit" style="white-space:nowrap">Send <span class="cta-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l7 6-7 6"/></svg></span></button>
+      </form>
+    </div>
+  </section>
+
+  <section class="wrap section reveal-block">
     <div class="grid cols-2" style="align-items:center">
       <div style="transition-delay: 0ms;">
         <div class="section-head reveal">
@@ -218,16 +228,6 @@
         <div class="stat" style="border-right:none; border-bottom:1px solid var(--line)"><div class="n">Key Vendor</div><div class="l">to Airbus, Boeing, COMAC and Leonardo</div></div>
         <div class="stat" style="border-right:none"><div class="n">Global presence</div></div>
       </div>
-    </div>
-  </section>
-
-  <section class="band reveal-block" style="background:var(--navy-950)">
-    <div class="wrap">
-      <div><h2>Download our e-brochure</h2><p>Enter your email address to receive a copy of our latest e-brochure.</p></div>
-      <form style="display:flex; gap:8px; min-width:0; max-width:100%; flex:0 1 420px" onsubmit="event.preventDefault()">
-        <input type="email" placeholder="Work email" required="" style="flex:1; width:0; min-width:0; border:1px solid rgba(255,255,255,.3); border-radius:6px; padding:11px 12px; font:inherit; background:rgba(255,255,255,.06); color:#fff">
-        <button class="cta" type="submit" style="white-space:nowrap; background:var(--blue-600)">Send <span class="cta-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l7 6-7 6"/></svg></span></button>
-      </form>
     </div>
   </section></main>
 
@@ -250,7 +250,6 @@
 
 <footer>
   <div class="footer-accent"></div>
-  <img class="footer-wm" src="assets/img/img-13-57e3d69aebfc-480.webp" alt="" width="480" height="160" loading="lazy" decoding="async">
   <div class="wrap">
     <div class="foot-grid">
       <div>
@@ -281,7 +280,6 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 AD Aerospace. All rights reserved. &nbsp;·&nbsp; <a href="#" style="color:inherit; text-decoration:underline">Terms &amp; Conditions</a> &nbsp;·&nbsp; <a href="#" style="color:inherit; text-decoration:underline">Privacy Policy</a></span>
-      <span class="mono">DRAFT PROTOTYPE — NOT FINAL COPY</span>
     </div>
   </div>
 </footer>
