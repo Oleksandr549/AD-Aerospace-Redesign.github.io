@@ -129,26 +129,67 @@
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !overlay.hidden) closeMenu(); });
 })();
 
+// Video modal: one player for every [data-video-modal] trigger (Resources cards, hero button).
+// A trigger carries data-video-src / data-video-title / data-video-poster. Without a src the modal
+// shows the "file still to be supplied" state, so adding a file later is a data change only.
 (function(){
   var backdrop = document.getElementById('videoModalBackdrop');
+  if(!backdrop) return;
   var closeBtn = document.getElementById('videoModalClose');
-  if(!backdrop || !closeBtn) return;
-  closeBtn.addEventListener('click', closeVideoModal);
-  backdrop.addEventListener('click', function(e){ if(e.target === backdrop) closeVideoModal(); });
-  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !backdrop.hidden) closeVideoModal(); });
+  var player = backdrop.querySelector('.video-modal-player');
+  var pending = backdrop.querySelector('.video-modal-pending');
+  var titleEl = document.getElementById('videoModalTitle');
+  var lastTrigger = null;
+
+  function open(trigger){
+    lastTrigger = trigger;
+    var src = trigger.getAttribute('data-video-src');
+    titleEl.textContent = trigger.getAttribute('data-video-title') || 'Video';
+    if(src){
+      player.poster = trigger.getAttribute('data-video-poster') || '';
+      player.src = src;
+      player.hidden = false;
+      pending.hidden = true;
+    } else {
+      player.hidden = true;
+      pending.hidden = false;
+    }
+    backdrop.hidden = false;
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+    if(src){ var p = player.play(); if(p && p.catch) p.catch(function(){}); }
+  }
+  function close(){
+    player.pause();
+    player.removeAttribute('src');
+    player.removeAttribute('poster');
+    player.load();
+    backdrop.hidden = true;
+    document.body.style.overflow = '';
+    if(lastTrigger && lastTrigger.focus) lastTrigger.focus();
+    lastTrigger = null;
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target.closest && e.target.closest('[data-video-modal]');
+    if(!t) return;
+    e.preventDefault();
+    open(t);
+  });
+  closeBtn.addEventListener('click', close);
+  backdrop.addEventListener('click', function(e){ if(e.target === backdrop) close(); });
+  document.addEventListener('keydown', function(e){
+    if(backdrop.hidden) return;
+    if(e.key === 'Escape'){ close(); return; }
+    if(e.key === 'Tab'){
+      // keep focus inside the dialog: close button <-> player controls
+      var f = [closeBtn].concat(player.hidden ? [] : [player]);
+      var i = f.indexOf(document.activeElement);
+      if(e.shiftKey && i <= 0){ e.preventDefault(); f[f.length-1].focus(); }
+      else if(!e.shiftKey && i === f.length-1){ e.preventDefault(); f[0].focus(); }
+      else if(i === -1){ e.preventDefault(); f[0].focus(); }
+    }
+  });
 })();
-function openVideoModal(){
-  var b = document.getElementById('videoModalBackdrop');
-  if(!b) return;
-  b.hidden = false;
-  document.body.style.overflow = 'hidden';
-}
-function closeVideoModal(){
-  var b = document.getElementById('videoModalBackdrop');
-  if(!b) return;
-  b.hidden = true;
-  document.body.style.overflow = '';
-}
 
 (function(){
   var backdrop = document.getElementById('imageLightboxBackdrop');
@@ -307,7 +348,12 @@ function afterRender(){
   const revealEls = app.querySelectorAll('.reveal, .reveal-block');
   if('IntersectionObserver' in window){
     window.__io = new IntersectionObserver(entries=>{
-      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); window.__io.unobserve(e.target); } });
+      entries.forEach(e=>{ if(e.isIntersecting){
+        const el = e.target; el.classList.add('in'); window.__io.unobserve(el);
+        // the staggered reveal delay must not linger on the element, or hover transitions would lag
+        const d = parseFloat(el.style.transitionDelay) || 0;
+        if(d) setTimeout(()=>{ el.style.transitionDelay = ''; }, d + 900);
+      } });
     }, {threshold:0, rootMargin:'0px 0px 200px 0px'});
     revealEls.forEach(el=>window.__io.observe(el));
   } else {
@@ -360,7 +406,7 @@ function afterRender(){
       if(seen.has(src)) return;
       seen.add(src);
       const captionEl = i.parentElement.querySelector('h3, figcaption');
-      items.push({src, alt:i.getAttribute('alt') || '', caption: captionEl ? captionEl.textContent : ''});
+      items.push({src, alt:i.getAttribute('alt') || '', caption: captionEl ? captionEl.textContent : (card.getAttribute('data-label') || '')});
     });
     photoImg.addEventListener('click', ()=>{
       const idx = items.findIndex(it=>it.src === photoImg.getAttribute('src'));
@@ -368,24 +414,30 @@ function afterRender(){
     });
   });
 
-  // 360 viewer: drag-to-rotate cue (visual only — real model on the live site)
-  app.querySelectorAll('[data-orbit]').forEach(viewer=>{
-    let dragging = false, lastX = 0, deg = 0;
-    const core = viewer.querySelector('.orbit-core');
-    viewer.addEventListener('pointerdown', e=>{ dragging = true; lastX = e.clientX; });
-    window.addEventListener('pointerup', ()=> dragging = false);
-    window.addEventListener('pointermove', e=>{
-      if(!dragging || !core) return;
-      deg += (e.clientX - lastX) * 0.5;
-      lastX = e.clientX;
-      core.style.transform = `rotateY(${deg}deg)`;
-    });
+  // HD / 4K comparison slider
+  app.querySelectorAll('[data-compare]').forEach(box=>{
+    const frame = box.querySelector('.compare-frame'), range = box.querySelector('.compare-range');
+    if(!frame || !range) return;
+    const set = ()=> frame.style.setProperty('--pos', range.value + '%');
+    range.addEventListener('input', set); set();
   });
 
-  // video modal triggers
-  app.querySelectorAll('[data-video-modal]').forEach(btn=>{
-    btn.addEventListener('click', openVideoModal);
-  });
+  // 3D viewer: js/camera-3d.js (three.js bundle, ~550 KB) is only fetched once the viewer
+  // is about to scroll into view; until then (and if WebGL is unavailable) the poster photo shows.
+  const viewers3d = app.querySelectorAll('[data-viewer3d]');
+  if(viewers3d.length){
+    let loading = null;
+    const loadLib = () => loading || (loading = new Promise((res, rej)=>{
+      if(window.AD3D) return res();
+      const s = document.createElement('script'); s.src = 'js/camera-3d.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s);
+    }));
+    const start = el => loadLib().then(()=> window.AD3D.init(el)).catch(()=>{ el.classList.remove('v3d-loading'); el.classList.add('v3d-failed'); });
+    if('IntersectionObserver' in window){
+      const io = new IntersectionObserver(es => es.forEach(e=>{ if(e.isIntersecting){ io.unobserve(e.target); start(e.target); } }), {rootMargin:'400px'});
+      viewers3d.forEach(v => io.observe(v));
+    } else viewers3d.forEach(start);
+  }
+
 
   // click-to-play product videos: poster + centered play badge (e.g. eVTOL 4K animation).
   // Native controls stay off until the badge is clicked, so the frame reads as a still
@@ -453,3 +505,58 @@ window.addEventListener('scroll', updateHeaderGlass, {passive:true});
 
 afterRender(); // wire up interactivity for this page's (already-rendered) content
 updateHeaderGlass();
+
+
+/* hotspot labels: anchor toward the plane's interior for spots near an edge */
+(function(){
+  document.querySelectorAll('.wire-plane .spot').forEach(function(s){
+    var m = /left:\s*([\d.]+)%/.exec(s.getAttribute('style') || '');
+    if(!m) return;
+    var x = parseFloat(m[1]);
+    if(x < 28) s.classList.add('lbl-l'); else if(x > 72) s.classList.add('lbl-r');
+  });
+})();
+
+/* Lazy-load + auto-play/pause the muted looping "anim-video" clips: nothing is downloaded until the
+   video is near the viewport, and it pauses again when scrolled away (saves bandwidth and CPU). */
+(function(){
+  var vids = document.querySelectorAll('video[data-lazy-video]');
+  if(!vids.length) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function load(v){
+    if(v.dataset.loaded) return;
+    v.dataset.loaded = '1';
+    v.querySelectorAll('source[data-src]').forEach(function(s){ s.src = s.getAttribute('data-src'); });
+    v.load();
+  }
+  if(!('IntersectionObserver' in window)){ vids.forEach(function(v){ load(v); if(!reduce) v.play().catch(function(){}); }); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      var v = e.target;
+      if(e.isIntersecting){ load(v); if(!reduce) v.play().catch(function(){}); }
+      else if(v.dataset.loaded){ v.pause(); }
+    });
+  }, {rootMargin:'200px 0px'});
+  vids.forEach(function(v){ io.observe(v); });
+})();
+
+// Document download rows: a row with a real file is a plain <a href="…pdf" download>.
+// A row still waiting on the client's file carries data-doc-pending and shows a short notice instead.
+(function(){
+  var toast, timer;
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('[data-doc-pending]');
+    if(!a) return;
+    e.preventDefault();
+    if(!toast){
+      toast = document.createElement('div');
+      toast.className = 'doc-toast';
+      toast.setAttribute('role', 'status');
+      document.body.appendChild(toast);
+    }
+    toast.textContent = '“' + (a.getAttribute('data-doc-title') || 'This document') + '” — the PDF is still to be supplied by the client. Once it is uploaded in the admin panel, this row downloads it.';
+    toast.classList.add('show');
+    clearTimeout(timer);
+    timer = setTimeout(function(){ toast.classList.remove('show'); }, 5000);
+  });
+})();
