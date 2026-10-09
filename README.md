@@ -1,40 +1,54 @@
-# AD Aerospace — website redesign (static showcase)
+<p align="center">
+  <img width="100%"  alt="image" src="https://github.com/user-attachments/assets/4fa30873-6852-4728-aeb7-2e2ad2e2a3d3" />
 
-Redesign of the AD Aerospace website, aircraft video surveillance systems for civil aviation. This repository is a static copy of the finished WordPress build, so it can be browsed without a server (GitHub Pages).
+</p>
 
-**Live demo:** `https://<username>.github.io/<repository>/`
+# AD Aerospace: website redesign
 
-## What the site includes
+A full redesign of the website for **AD Aerospace**, a British manufacturer of aircraft video surveillance systems for civil aviation. The brief covered a new visual identity and information architecture, a product catalogue the client can edit on their own, and a site in four languages.
 
-- 48 pages: home, about, products, systems, LRUs with category filters and spec sheets, aircraft pages, 4K IP camera page, certificates, resources, contact
-- Interactive aircraft hotspot map and a 3D camera viewer (Three.js, GLB model)
-- Self-hosted video with poster images, no third-party embeds
-- Responsive layout, keyboard-accessible navigation and focus states, built toward WCAG 2.0 A
-- Self-hosted fonts (Montserrat, Lato) with `font-display` handling, WebP images with `srcset`
-- Single hand-written stylesheet and one small script, no front-end framework
+**[Live demo](https://oleksandr549.github.io/AD-Aerospace-Redesign.github.io/)**
+
+This repository is a static copy of the finished WordPress build, so it can be browsed without a server and hosted on GitHub Pages.
+
+## Highlights
+
+- **48 pages**: home, about, products, systems, line-replaceable units (LRUs) with category pages and spec sheets, aircraft pages, 4K IP camera, certificates, resources and contact
+- **Interactive 3D viewer** of the 4K camera (Three.js, GLB model), loaded only when it scrolls into view
+- **Aircraft hotspot map** that links each point on the airframe to the matching product range
+- **Four languages**: English, 中文, Русский and العربية with a full right-to-left layout
+- **Self-hosted media**: video, fonts, PDFs and datasheets are served from the site itself, with no third-party embeds
+- **Hand-written front end**: one stylesheet and one small script, no framework
+
+## Design and front end
+
+- Design system built on CSS custom properties: colour, type scale, spacing and component states in one place
+- CSS grid and flexbox layouts that adapt from phone to wide desktop, with RTL-aware styles for Arabic
+- Montserrat and Lato served as local WOFF2 files, images as WebP with `srcset`
+- Keyboard-accessible navigation, visible focus states, labelled controls and reduced-motion support, built toward WCAG 2.0 level A
+- Heavy assets are loaded lazily: the 3D library and model are fetched only when the viewer is about to appear
 
 ## How it was built
 
-The live site runs on WordPress with a custom theme and a custom-post-type content plugin, so the client edits every page, product and document from the admin. This repository contains only the rendered output of that build.
+The production site runs on WordPress with a custom theme and a content plugin that defines post types for systems, LRUs, aircraft, videos, documents and certificates. The client edits every page, product and document from the admin, and block patterns let them assemble new pages from the same design.
 
-- Stack: WordPress, custom theme (PHP templates, one CSS file, vanilla JS), Secure Custom Fields, Polylang (EN / 中文 / Русский / العربية on the live site)
-- Front-end: CSS custom properties, CSS grid and flexbox, RTL-aware styles, Three.js for the camera viewer
+| Layer | Tools |
+| --- | --- |
+| CMS | WordPress, custom theme (PHP templates), custom post types |
+| Fields | Secure Custom Fields |
+| Languages | Polylang, with translations loaded from structured data |
+| Front end | Vanilla JavaScript, CSS, Three.js |
+| Hosting | Cloudways, with page and object caching |
 
-## Notes on this copy
+This repository contains only the rendered output of that build.
 
+## About this copy
+
+- The language switcher is live on the home page, which is available in all four languages. The other pages are English only, so choosing a language anywhere opens the translated home page.
+- Forms (brochure request, contact) are switched off because there is no back end here.
 - The 3D viewer needs a browser with WebGL. It also works when `index.html` is opened straight from disk.
-- Forms (brochure request, contact) are switched off here because there is no back end.
-- Language switcher: the home page is available in English, 中文, Русский and العربية (RTL). In this copy the other pages are English only, so choosing a language on any page opens the translated home page.
 - All text, images, videos and brand assets belong to AD Aerospace and its partners.
 
-## Run locally
+## Author
 
-```
-python3 -m http.server 8000
-```
-
-Then open `http://localhost:8000/`.
-
-## Publish on GitHub Pages
-
-Repository **Settings → Pages → Deploy from a branch → `main` / root**. The `.nojekyll` file is already included. All links are relative, so the site works from `https://<username>.github.io/<repository>/`.
+Oleksandr Vyshnevskyi, front-end developer. [Portfolio](https://vyshnevsky.com)
